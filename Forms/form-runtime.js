@@ -129,7 +129,7 @@
           if (field.normalizer.kind === "Trim") text = text.trim();
           else if (field.normalizer.kind === "Custom")
             text =
-              window.FormRuleRegistry.normalizers[field.normalizer.ruleId](
+              window.FormRuleRegistry.normalizers[field.normalizer.method](
                 text,
               );
           else throw new Error("Unknown normalizer: " + field.normalizer.kind);
@@ -223,7 +223,7 @@
           case "IsNumber":
             break;
           case "Custom":
-            invalid = !window.FormRuleRegistry.validators[rule.ruleId](
+            invalid = !window.FormRuleRegistry.validators[rule.method](
               text,
               values,
             );
@@ -282,7 +282,7 @@
           .slice(0, position)
           .replace(/[^0-9]/g, "").length;
         var formatted = window.FormRuleRegistry.formatters[
-          field.formatter.ruleId
+          field.formatter.method
         ](element.value);
         if (typeof formatted !== "string")
           throw new Error("Formatter returned a non-string value.");
@@ -368,7 +368,7 @@
               : blocker.kind === "Pattern"
                 ? new RegExp(blocker.prefixPattern).test(candidate)
                 : blocker.kind === "Custom"
-                  ? window.FormRuleRegistry.blockers[blocker.ruleId](
+                  ? window.FormRuleRegistry.blockers[blocker.method](
                       candidate,
                       normalized(),
                     )

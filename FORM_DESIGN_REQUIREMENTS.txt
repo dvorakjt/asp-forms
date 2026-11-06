@@ -38,6 +38,9 @@ Form design requirements (planned; not yet implemented)
 - Developers can control styling through CSP-compatible stylesheets and classes.
 - Rules run on both the server and in the browser. Server validation remains authoritative.
 - Shared custom C# rules are compiled into JavaScript with Transpose at build time.
+- Named public static custom functions use their method names as browser keys.
+  Anonymous functions require an explicit RuleId and a matching browser registry
+  entry; an explicit RuleId can also override the key for a named method.
 - Custom rules can inspect the field being checked and the rest of the form.
 - Custom rules can depend on other fields; changing a dependency revalidates the affected field.
 - Developers choose how their date-dependent functions determine "today" and

@@ -1,0 +1,64 @@
+@model FormsSandbox.Forms2.Examples.EnrollmentModel
+@using FormsSandbox.Forms2.Examples
+@{
+    Layout = null;
+    var definition = EnrollmentDefinition.Create();
+}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Typed enrollment demo</title>
+  <link rel="stylesheet" href="@Url.Content("~/Content/document-form.css")" />
+</head>
+<body>
+<main>
+  <h1>Typed enrollment</h1>
+  <p>Free or paid; paid enrollment uses either a saved card or a new expiry date.</p>
+  @if (TempData["Notice"] != null) { <p role="status">@TempData["Notice"]</p> }
+  @using (Html.BeginForm(definition.Actions[1].Endpoint, definition.Actions[1].Controller,
+      FormMethod.Post, new { data_typed_form = definition.ClientConfiguration(), novalidate = "novalidate" }))
+  {
+    @Html.AntiForgeryToken()
+    <div class="field" data-typed-field="Plan"><label for="Plan">Plan</label>
+      @Html.DropDownListFor(m => m.Plan, new[] {
+        new SelectListItem { Value = "free", Text = "Free" },
+        new SelectListItem { Value = "paid", Text = "Paid" }
+      }, "Choose a plan")
+      <span id="Plan_error" data-typed-error>@Html.ValidationMessageFor(m => m.Plan)</span>
+    </div>
+    <div class="field" data-typed-field="CardChoice"><label for="CardChoice">Card choice</label>
+      @Html.DropDownListFor(m => m.CardChoice, new[] {
+        new SelectListItem { Value = "saved", Text = "Saved card" },
+        new SelectListItem { Value = "new", Text = "New card" }
+      }, "Choose a card")
+      <span id="CardChoice_error" data-typed-error>@Html.ValidationMessageFor(m => m.CardChoice)</span>
+    </div>
+    <div class="field" data-typed-field="SavedCard"><label for="SavedCard">Saved card</label>
+      @Html.TextBoxFor(m => m.SavedCard)
+      <span id="SavedCard_error" data-typed-error>@Html.ValidationMessageFor(m => m.SavedCard)</span>
+    </div>
+    <div class="field" data-typed-field="ExpiryMonth"><label for="ExpiryMonth">Expiry month</label>
+      @Html.TextBoxFor(m => m.ExpiryMonth)
+      <span id="ExpiryMonth_error" data-typed-error>@Html.ValidationMessageFor(m => m.ExpiryMonth)</span>
+    </div>
+    <div class="field" data-typed-field="ExpiryYear"><label for="ExpiryYear">Expiry year</label>
+      @Html.TextBoxFor(m => m.ExpiryYear)
+      <span id="ExpiryYear_error" data-typed-error>@Html.ValidationMessageFor(m => m.ExpiryYear)</span>
+    </div>
+    <div class="field" data-typed-field="Amount"><label for="Amount">Amount</label>
+      @Html.TextBoxFor(m => m.Amount)
+      <span id="Amount_error" data-typed-error>@Html.ValidationMessageFor(m => m.Amount)</span>
+    </div>
+    <div class="actions">
+      <button type="submit" data-form-action="SaveDraft"
+        formaction="@Url.Action("SaveDraft", "Enrollment")">Save draft</button>
+      <button type="submit" data-form-action="Submit"
+        formaction="@Url.Action("Submit", "Enrollment")">Submit</button>
+    </div>
+  }
+</main>
+<script src="@Url.Content("~/Content/typed-rules.js")" defer></script>
+<script src="@Url.Content("~/Forms2/Client/typed-form.js")" defer></script>
+</body>
+</html>

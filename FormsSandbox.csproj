@@ -72,6 +72,7 @@
     <Compile Include="Controllers\**\*.cs" />
     <Compile Include="Models\**\*.cs" />
     <Compile Include="Forms\**\*.cs" />
+    <Compile Include="Forms2\**\*.cs" Exclude="Forms2\Client\**\*.cs;Forms2\Tests\**\*.cs" />
     <Compile Include="Examples\*.cs" />
     <Compile Include="Prototypes\Expression\*.cs" />
     <Compile Include="Prototypes\Transpose\SharedQuantity.cs" />
@@ -84,6 +85,7 @@
     <Content Include="Content\**\*.css" />
     <Content Include="Content\**\*.js" />
     <Content Include="Forms\**\*.js" />
+    <Content Include="Forms2\**\*.js" />
     <Content Include="Examples\Client\*.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -119,5 +121,12 @@
     <Exec Command="dotnet tool restore" />
     <Exec Command="dotnet restore Examples/Client/DocumentClient.csproj --nologo" />
     <Exec Command="dotnet tool run tps -- Examples/Client/DocumentClient.csproj --out Content/document-rules.js --with-runtime" />
+  </Target>
+  <Target Name="BuildTypedBrowserRules" AfterTargets="Build"
+          Inputs="Forms2\Shared\ValueRules.cs;Forms2\Examples\EnrollmentRules.cs;Forms2\FieldState.cs;Forms2\FormSnapshot.cs;Forms2\Client\TypedClient.csproj"
+          Outputs="Content\typed-rules.js">
+    <Exec Command="dotnet tool restore" />
+    <Exec Command="dotnet restore Forms2/Client/TypedClient.csproj --nologo" />
+    <Exec Command="dotnet tool run tps -- Forms2/Client/TypedClient.csproj --out Content/typed-rules.js --with-runtime" />
   </Target>
 </Project>

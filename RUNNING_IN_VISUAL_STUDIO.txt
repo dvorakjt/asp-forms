@@ -2,8 +2,8 @@ Running the MVC 5 demo in Visual Studio on Windows
 
 1. Install the "ASP.NET and web development" workload, the .NET Framework 4.8 developer pack, and the .NET 10 SDK. The .NET 10 SDK is only used to build the Transpose browser rules; the web application runs on .NET Framework 4.8.
 2. Open FormsSandbox.sln in Visual Studio. Set FormsSandbox as the startup project if Visual Studio has not selected it automatically.
-3. Restore NuGet packages and build the solution. A build also restores the local Transpose compiler and generates Content/document-rules.js from Examples/DocumentFormRules.cs.
-4. Select IIS Express in the launch dropdown and press F5. The default route is /Document/Edit. If the root page does not open, browse to /Document/Edit at the IIS Express URL shown by Visual Studio.
+3. Restore NuGet packages and build the solution. A build also restores the local Transpose compiler and generates Content/document-rules.js and Content/typed-rules.js from the shared C# rules.
+4. Select IIS Express in the launch dropdown and press F5. The default route is /Document/Edit. For the new typed-model, conditional-participation demo browse to /Enrollment/Edit at the IIS Express URL shown by Visual Studio.
 5. The MVC assembly and its MVC/Razor dependencies must be in the project's root bin folder; the browser rule bundle must exist under Content. Both are produced by the build.
 
 If Visual Studio cannot load the web project, install or repair the ASP.NET and web development workload. If Transpose cannot start, confirm the .NET 10 SDK is installed in Windows, then build again. Rider on Windows can use the same project with IIS Express; Rider on macOS cannot run IIS Express.

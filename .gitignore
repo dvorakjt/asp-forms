@@ -1,4 +1,5 @@
 bin/
 obj/
 Content/document-rules.js
+Content/typed-rules.js
 .vs/

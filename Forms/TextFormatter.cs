@@ -2,8 +2,8 @@ using System;
 
 namespace FormsSandbox.Forms
 {
-    // A formatter changes displayed text only. Browser event handling is not
-    // wired up yet; its implementation and identifier are defined together.
+    // A formatter changes displayed text only. Named public static methods
+    // link by method name; anonymous callbacks need an explicit RuleId.
     public sealed class TextFormatter
     {
         public string RuleId { get; set; }

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'">
+  <title>Typed enrollment browser fixture</title>
+</head>
+<body>
+<form data-typed-form='{"defaultAction":"Submit","actions":[{"name":"SaveDraft"},{"name":"Submit"}],"fields":[{"name":"Plan","type":"String","include":null,"exclude":null,"condition":null,"normalize":"NormalizePlan","validators":[{"order":10,"message":"Choose a plan.","crossField":false,"method":"HasPlan","include":null,"exclude":null,"condition":null}]},{"name":"CardChoice","type":"String","include":null,"exclude":null,"condition":"IsPaid","normalize":null,"validators":[{"order":10,"message":"Choose a card option.","crossField":false,"method":"HasChoice","include":null,"exclude":null,"condition":null}]},{"name":"SavedCard","type":"String","include":null,"exclude":null,"condition":"UseSavedCard","normalize":null,"validators":[{"order":10,"message":"Choose an available saved card.","crossField":false,"method":"HasSavedCard","include":null,"exclude":null,"condition":null}]},{"name":"ExpiryMonth","type":"Int32","include":null,"exclude":null,"condition":"UseNewCard","normalize":null,"validators":[{"order":10,"message":"Choose a valid month.","crossField":false,"method":"MonthInRange","include":null,"exclude":null,"condition":null},{"order":20,"message":"The card has expired.","crossField":true,"method":"ExpiryIsCoherent","include":null,"exclude":null,"condition":null}]},{"name":"ExpiryYear","type":"Int32","include":null,"exclude":null,"condition":"UseNewCard","normalize":null,"validators":[{"order":10,"message":"Choose a valid year.","crossField":false,"method":"YearInRange","include":null,"exclude":null,"condition":null}]},{"name":"Amount","type":"Decimal","include":null,"exclude":null,"condition":"IsPaid","normalize":null,"validators":[{"order":10,"message":"Enter a positive amount.","crossField":false,"method":"AmountIsPositive","include":null,"exclude":null,"condition":null}]}]}' novalidate>
+  <div data-typed-field="Plan"><label for="Plan">Plan</label><select id="Plan" name="Plan"><option value="free">Free</option><option value="paid">Paid</option></select><span id="Plan_error" data-typed-error hidden></span></div>
+  <div data-typed-field="CardChoice"><label for="CardChoice">Card</label><select id="CardChoice" name="CardChoice"><option value="saved">Saved</option><option value="new">New</option></select><span id="CardChoice_error" data-typed-error hidden></span></div>
+  <div data-typed-field="SavedCard"><label for="SavedCard">Saved card</label><input id="SavedCard" name="SavedCard" value="card-123"><span id="SavedCard_error" data-typed-error hidden></span></div>
+  <div data-typed-field="ExpiryMonth"><label for="ExpiryMonth">Month</label><input id="ExpiryMonth" name="ExpiryMonth" value="11"><span id="ExpiryMonth_error" data-typed-error hidden></span></div>
+  <div data-typed-field="ExpiryYear"><label for="ExpiryYear">Year</label><input id="ExpiryYear" name="ExpiryYear" value="2026"><span id="ExpiryYear_error" data-typed-error hidden></span></div>
+  <div data-typed-field="Amount"><label for="Amount">Amount</label><input id="Amount" name="Amount" value="15.00"><span id="Amount_error" data-typed-error hidden></span></div>
+  <button type="submit" data-form-action="SaveDraft">Save draft</button>
+  <button type="submit" data-form-action="Submit">Submit</button>
+</form>
+<script src="../../Content/typed-rules.js" defer></script>
+<script src="../Client/typed-form.js" defer></script>
+</body>
+</html>

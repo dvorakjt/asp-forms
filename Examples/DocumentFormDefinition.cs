@@ -28,9 +28,8 @@ namespace FormsSandbox.Examples
                 Scope = Only("Submit"), Message = "Enter a summary before submitting." });
             summary.Validators.Add(new FormValidator { Kind = ValidatorKind.Custom, Order = 20,
                 Scope = Only("Submit"), OtherField = nameof(DocumentForm.Title),
-                RuleId = "SummaryDiffersFromTitle", Message = "Use a summary different from the title.",
-                CustomCheck = (text, values) => DocumentFormRules.SummaryDiffersFromTitle(
-                    text, values[nameof(DocumentForm.Title)]) });
+                Message = "Use a summary different from the title.",
+                CustomCheck = DocumentFormRules.SummaryDiffersFromTitleInForm });
 
             var body = form.Field((DocumentForm model) => model.Body);
             body.Element = FieldElement.TextArea;
@@ -56,8 +55,7 @@ namespace FormsSandbox.Examples
             amount.Blockers.Add(new InputBlocker { Kind = InputBlockerKind.Pattern, Order = 10,
                 PrefixPattern = @"^[+-]?[0-9]*(\.[0-9]*)?$" });
             amount.Blockers.Add(new InputBlocker { Kind = InputBlockerKind.Custom, Order = 20,
-                RuleId = "AmountHasNoEmbeddedSpaces",
-                CustomCheck = (candidate, values) => DocumentFormRules.AmountHasNoEmbeddedSpaces(candidate) });
+                CustomCheck = DocumentFormRules.AmountHasNoEmbeddedSpacesInForm });
             amount.Validators.Add(new FormValidator { Kind = ValidatorKind.Required, Order = 10,
                 Message = "Enter an amount." });
             amount.Validators.Add(new FormValidator { Kind = ValidatorKind.IsNumber, Order = 20,
@@ -91,9 +89,8 @@ namespace FormsSandbox.Examples
 
             var phone = form.Field((DocumentForm model) => model.Phone);
             phone.Normalizer = new TextNormalizer { Kind = TextNormalizerKind.Custom,
-                RuleId = "PhoneDigits", CustomNormalize = DocumentFormRules.PhoneDigits };
-            phone.Formatter = new TextFormatter { RuleId = "FormatPhone",
-                Format = DocumentFormRules.FormatPhone };
+                CustomNormalize = DocumentFormRules.PhoneDigits };
+            phone.Formatter = new TextFormatter { Format = DocumentFormRules.FormatPhone };
             phone.Blockers.Add(new InputBlocker { Kind = InputBlockerKind.MaxLength,
                 Order = 10, MaximumLength = 12 });
             phone.Validators.Add(new FormValidator { Kind = ValidatorKind.Pattern, Order = 10,

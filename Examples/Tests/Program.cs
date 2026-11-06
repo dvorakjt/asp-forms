@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using FormsSandbox.Examples;
 using FormsSandbox.Forms;
 using FormsSandbox.Models;
+using FormsSandbox.Forms2.Examples;
 
 namespace FormsSandbox.Examples.Tests
 {
@@ -32,6 +33,49 @@ namespace FormsSandbox.Examples.Tests
             Assert(config.Contains("\"kind\":\"Step\""));
             Assert(config.Contains("\"stepSize\":0.01"));
             Assert(config.Contains("\"converter\":\"Decimal\""));
+            Assert(config.Contains("\"method\":\"SummaryDiffersFromTitleInForm\""));
+            Assert(config.Contains("\"method\":\"AmountHasNoEmbeddedSpacesInForm\""));
+            Assert(config.Contains("\"method\":\"PhoneDigits\""));
+            Assert(config.Contains("\"method\":\"FormatPhone\""));
+            Assert(!config.Contains("\"ruleId\""));
+            // A named public static method needs no RuleId. An anonymous
+            // function needs a stable key registered in the browser bundle.
+            var anonymousValidator = DocumentFormDefinition.Create();
+            anonymousValidator.Fields[1].Validators[1].CustomCheck = (text, values) =>
+                text != values["Title"];
+            ExpectInvalid(anonymousValidator);
+            anonymousValidator.Fields[1].Validators[1].RuleId = "InlineSummaryCheck";
+            Assert(anonymousValidator.ClientConfiguration().Contains(
+                "\"method\":\"InlineSummaryCheck\""));
+
+            var anonymousBlocker = DocumentFormDefinition.Create();
+            anonymousBlocker.Fields[4].Blockers[1].CustomCheck = (candidate, values) =>
+                candidate.IndexOf(' ') < 0;
+            ExpectInvalid(anonymousBlocker);
+            anonymousBlocker.Fields[4].Blockers[1].RuleId = "InlineAmountCheck";
+            Assert(anonymousBlocker.ClientConfiguration().Contains(
+                "\"method\":\"InlineAmountCheck\""));
+
+            var anonymousNormalizer = DocumentFormDefinition.Create();
+            anonymousNormalizer.Fields[7].Normalizer.CustomNormalize = text => text.Trim();
+            ExpectInvalid(anonymousNormalizer);
+            anonymousNormalizer.Fields[7].Normalizer.RuleId = "InlinePhoneNormalize";
+            Assert(anonymousNormalizer.ClientConfiguration().Contains(
+                "\"method\":\"InlinePhoneNormalize\""));
+
+            var anonymousFormatter = DocumentFormDefinition.Create();
+            anonymousFormatter.Fields[7].Formatter.Format = text => text;
+            ExpectInvalid(anonymousFormatter);
+            anonymousFormatter.Fields[7].Formatter.RuleId = "InlinePhoneFormat";
+            Assert(anonymousFormatter.ClientConfiguration().Contains(
+                "\"method\":\"InlinePhoneFormat\""));
+
+            var namedOverride = DocumentFormDefinition.Create();
+            namedOverride.Fields[7].Formatter.RuleId = "PhoneFormatAlias";
+            Assert(namedOverride.ClientConfiguration().Contains(
+                "\"method\":\"PhoneFormatAlias\""));
+            namedOverride.Fields[7].Formatter.RuleId = " ";
+            ExpectInvalid(namedOverride);
             Assert(config.Contains("\"normalizer\":{\"kind\":\"Trim\""));
             Assert(config.Contains("\"formatter\":null"));
             Assert(!config.Contains("\"trim\":true"));
@@ -71,8 +115,7 @@ namespace FormsSandbox.Examples.Tests
                 Name = "Title",
                 Normalizer = new TextNormalizer { Kind = TextNormalizerKind.Trim },
                 Converter = new FieldConverter { Type = FieldValueType.String },
-                Formatter = new TextFormatter { RuleId = "Echo",
-                    Format = text => text },
+                Formatter = new TextFormatter { Format = DocumentFormRules.PhoneDigits },
                 Validators = new[] { new FormValidator { Kind = ValidatorKind.Required,
                     Order = 10, Message = "Enter a title." } },
                 Blockers = new[] { new InputBlocker { Kind = InputBlockerKind.MaxLength,
@@ -80,7 +123,7 @@ namespace FormsSandbox.Examples.Tests
                 Options = new[] { new FormOption { Value = "x", Label = "X" } }
             };
             Assert(fieldDefinitions.Normalizer.Apply("  hi  ") == "hi" &&
-                fieldDefinitions.Formatter.Preview("hi") == "hi" &&
+                fieldDefinitions.Formatter.Preview("123") == "123" &&
                 fieldDefinitions.Validators.Count == 1 && fieldDefinitions.Blockers.Count == 1 &&
                 fieldDefinitions.Options.Count == 1);
             fieldDefinitions.Validators = new[] {
@@ -257,6 +300,7 @@ namespace FormsSandbox.Examples.Tests
             ExpectInvalid(bad);
 
             Console.WriteLine("Form scopes, input blockers, and numeric bounds/steps passed.");
+            TypedFormChecks.Run();
         }
 
         private static void CheckAmount(FormDefinition form, string amount, string expectedError)
@@ -289,9 +333,10 @@ namespace FormsSandbox.Examples.Tests
             };
         }
 
-        private static void Assert(bool condition)
+        private static void Assert(bool condition,
+            [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
         {
-            if (!condition) throw new Exception("Form configuration test failed.");
+            if (!condition) throw new Exception("Form configuration test failed at test line " + line);
         }
 
         private static void ExpectInvalid(FormDefinition form)

@@ -76,12 +76,15 @@ namespace FormsSandbox.Forms
                 if (field.Normalizer != null &&
                     (!Enum.IsDefined(typeof(TextNormalizerKind), field.Normalizer.Kind) ||
                      field.Normalizer.Kind == TextNormalizerKind.Custom &&
-                     (string.IsNullOrEmpty(field.Normalizer.RuleId) ||
-                      field.Normalizer.CustomNormalize == null)))
+                     field.Normalizer.CustomNormalize == null))
                     throw new InvalidOperationException("Unsupported or incomplete normalizer.");
+                if (field.Normalizer?.Kind == TextNormalizerKind.Custom)
+                    ClientRuleName.From(field.Normalizer.CustomNormalize, field.Normalizer.RuleId);
                 if (field.Formatter != null &&
-                    (string.IsNullOrEmpty(field.Formatter.RuleId) || field.Formatter.Format == null))
-                    throw new InvalidOperationException("A formatter needs a rule ID and function.");
+                    field.Formatter.Format == null)
+                    throw new InvalidOperationException("A formatter needs a function.");
+                if (field.Formatter != null)
+                    ClientRuleName.From(field.Formatter.Format, field.Formatter.RuleId);
                 CheckOrders(field.Validators.Select(v => v.Order));
                 CheckOrders(field.Blockers.Select(b => b.Order));
                 foreach (var validator in field.Validators)
@@ -92,8 +95,10 @@ namespace FormsSandbox.Forms
                     if (!Enum.IsDefined(typeof(ValidatorKind), validator.Kind))
                         throw new InvalidOperationException("Unsupported validator kind.");
                     if (validator.Kind == ValidatorKind.Custom &&
-                        (string.IsNullOrEmpty(validator.RuleId) || validator.CustomCheck == null))
-                        throw new InvalidOperationException("Custom validators need a rule ID and server check.");
+                        validator.CustomCheck == null)
+                        throw new InvalidOperationException("Custom validators need a server check.");
+                    if (validator.Kind == ValidatorKind.Custom)
+                        ClientRuleName.From(validator.CustomCheck, validator.RuleId);
                     if (validator.Kind == ValidatorKind.MinValue && !validator.Minimum.HasValue ||
                         validator.Kind == ValidatorKind.MaxValue && !validator.Maximum.HasValue)
                         throw new InvalidOperationException("Minimum and maximum validators need a bound.");
@@ -134,8 +139,9 @@ namespace FormsSandbox.Forms
                                 throw new InvalidOperationException("Pattern blocker needs a prefix pattern.");
                             break;
                         case InputBlockerKind.Custom:
-                            if (string.IsNullOrEmpty(blocker.RuleId) || blocker.CustomCheck == null)
-                                throw new InvalidOperationException("Custom blocker needs a rule ID and check.");
+                            if (blocker.CustomCheck == null)
+                                throw new InvalidOperationException("Custom blocker needs a check.");
+                            ClientRuleName.From(blocker.CustomCheck, blocker.RuleId);
                             break;
                     }
                 }
@@ -374,19 +380,27 @@ namespace FormsSandbox.Forms
                     name = f.Name, converter = f.Converter.Type.ToString(),
                     conversionMessage = f.Converter.ErrorMessage,
                     normalizer = f.Normalizer == null ? null : new {
-                        kind = f.Normalizer.Kind.ToString(), ruleId = f.Normalizer.RuleId
+                        kind = f.Normalizer.Kind.ToString(),
+                        method = f.Normalizer.Kind == TextNormalizerKind.Custom
+                            ? ClientRuleName.From(f.Normalizer.CustomNormalize, f.Normalizer.RuleId) : null
                     },
-                    formatter = f.Formatter == null ? null : new { ruleId = f.Formatter.RuleId },
+                    formatter = f.Formatter == null ? null : new {
+                        method = ClientRuleName.From(f.Formatter.Format, f.Formatter.RuleId)
+                    },
                     scope = f.Scope,
                     options = f.Options.Select(o => o.Value).ToArray(),
                     blockers = f.Blockers.OrderBy(b => b.Order).Select(b => new {
                         kind = b.Kind.ToString(), order = b.Order, maximumLength = b.MaximumLength,
-                        prefixPattern = b.PrefixPattern, ruleId = b.RuleId
+                        prefixPattern = b.PrefixPattern,
+                        method = b.Kind == InputBlockerKind.Custom
+                            ? ClientRuleName.From(b.CustomCheck, b.RuleId) : null
                     }).ToArray(),
                     validators = f.Validators.OrderBy(v => v.Order).Select(v => new {
                         kind = v.Kind.ToString(), order = v.Order, message = v.Message, scope = v.Scope,
                         length = v.Length, pattern = v.Pattern, otherField = v.OtherField,
-                        ruleId = v.RuleId, minimum = v.Minimum, maximum = v.Maximum,
+                        method = v.Kind == ValidatorKind.Custom
+                            ? ClientRuleName.From(v.CustomCheck, v.RuleId) : null,
+                        minimum = v.Minimum, maximum = v.Maximum,
                         stepSize = v.StepSize
                     }).ToArray()
                 }).ToArray()
