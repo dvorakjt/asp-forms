@@ -1,0 +1,64 @@
+@model FormsSandbox.Models.DocumentForm
+@using System.Linq
+@using FormsSandbox.Examples
+@using FormsSandbox.Forms
+@{
+    Layout = null;
+    ViewBag.Title = "Document form";
+    var form = DocumentFormDefinition.Create();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/document-form.css")" />
+</head>
+<body>
+    <main>
+        <h1>Document form</h1>
+        <p>Save a draft with a title, or submit a complete document. Each button posts the same form
+           to a different MVC action with different requirements.</p>
+
+        @if (TempData["Notice"] != null)
+        {
+            <div class="notice" role="status">@TempData["Notice"]</div>
+        }
+
+        @using (Html.BeginForm(form.Action("SaveDraft").Endpoint,
+            form.Action("SaveDraft").Controller, FormMethod.Post,
+            new { data_form_state = "document", data_form_config = form.ClientConfiguration(),
+                novalidate = "novalidate" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Title"), "Title",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-input")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Summary"), "Summary",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-input")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Body"), "Document text",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-input")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Category"), "Category",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-input")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Amount"), "Amount (USD)",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-input")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "AcceptTerms"), "Accept the terms",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-checkbox")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Topics"), "Topics",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-checkbox")
+            @Html.InputGroup(form.Fields.Single(f => f.Name == "Phone"), "Phone (optional)",
+                groupClass: "field", labelClass: "field-label", inputClass: "document-input",
+                inputType: TextInputType.Tel)
+            <div class="actions">
+                @Html.ActionButton(form, "SaveDraft", "Save draft")
+                @Html.ActionButton(form, "Submit", "Submit document")
+            </div>
+        }
+    </main>
+    <script src="@Url.Content("~/Content/document-rules.js")" defer></script>
+    <script src="@Url.Content("~/Examples/Client/document-bindings.js")" defer></script>
+    <script src="@Url.Content("~/Forms/form-state.js")" defer></script>
+    <script src="@Url.Content("~/Forms/form-runtime.js")" defer></script>
+</body>
+</html>

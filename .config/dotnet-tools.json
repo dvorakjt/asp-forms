@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "transpose.compiler": {
+      "version": "26.11.7776",
+      "commands": ["tps"]
+    }
+  }
+}

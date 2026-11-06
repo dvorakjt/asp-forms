@@ -1,0 +1,106 @@
+Form design requirements (planned; not yet implemented)
+
+- The forms system lives inside this ASP.NET MVC 5 project, using C# 7.3 and .NET Framework 4.8.
+- Developers declare each form's fields, rules, messages, input behavior, and
+  actions in one place, or as close to one place as MVC integration permits.
+- The same declarations drive server validation, browser behavior, and MVC HTML
+  rendering; developers should not have to maintain parallel rule definitions.
+- Form fields can be declared with expressions selecting direct properties of
+  a posted MVC model. Configuration checks that every field still matches a
+  writable string or string-array property; conversion stays in the forms system.
+- A field has one converter and may have one normalizer and one formatter.
+  These are objects, not flags or lists of steps.
+- Validators, input blockers, and options are always collections, even when
+  only one definition is present.
+- One model can support multiple form actions. Each action can use different fields and validation rules.
+- Fields and validators can each include or exclude named actions.
+- With no include list, a field or validator starts out applying to every action.
+- An include list restricts participation to its named actions; an exclude list
+  removes its named actions. Include and exclude cannot both be set on one item.
+- A validator runs only when both it and its field apply to the selected action.
+- Unknown action names in either list are configuration errors.
+- The server resolves the selected action from its declared actions; posted
+  fields outside that action do not bypass its rules or become accepted values.
+- MVC HTML helpers can render input groups. Developers choose labels and CSS
+  classes in the Razor helper call, rather than in field definitions.
+- Razor convenience components can render a declared field's label, input,
+  validation message, and action controls without repeating form configuration.
+- Input groups can render text, email, password, telephone, URL, number, and
+  date inputs, text areas, selects, a Boolean checkbox, radio groups, and
+  multi-selection checkbox groups. The view selects the input's presentation.
+- Checkbox and radio choices come from the field's declared options; the server
+  checks every posted selection against those options. An unchecked Boolean
+  checkbox posts no value and converts to false.
+- Components that offer choices accept an option list. The same authoritative
+  options drive rendered choices and option-membership validation.
+- Options can be supplied for a request; the server checks submitted values
+  against the options it supplies, not against options posted by the browser.
+- Developers can control styling through CSP-compatible stylesheets and classes.
+- Rules run on both the server and in the browser. Server validation remains authoritative.
+- Shared custom C# rules are compiled into JavaScript with Transpose at build time.
+- Custom rules can inspect the field being checked and the rest of the form.
+- Custom rules can depend on other fields; changing a dependency revalidates the affected field.
+- Developers choose how their date-dependent functions determine "today" and
+  which time zone or calendar they use; the forms system imposes no default zone.
+- A date rule may use an explicitly supplied clock, a user-specific zone, or a
+  business-defined zone. For expiration months, the function decides which
+  calendar month counts as current and whether that whole month is valid.
+- Date rules run in the browser and on the server. Developers must define how
+  both obtain compatible time context and how the server checks it at submission;
+  the browser must not rely on a date captured when the page first loaded.
+- A field can have an optional display formatter, such as a phone-number formatter.
+- Formatting can change displayed text while typing; it does not replace server validation.
+- Developers can define custom input blockers, formatters, and text normalizers
+  in shared C# source compiled for the browser with Transpose.
+- Failure behavior for custom input blockers, formatters, and normalizers needs
+  an explicit policy before implementation; failures must not silently validate.
+- Input blockers are separate from validators and have their own explicit order.
+- Order numbers must be unique within each field's input-blocker category.
+- Blockers inspect proposed edits in the browser and can prevent disallowed input.
+- Blocking rules must allow valid partial input; deletion and text composition need safe handling.
+- Blocking is never the only safeguard: pasted or directly submitted values are validated.
+- Text normalization produces a working string without changing the displayed input.
+- Normalization can be configured explicitly or supplied by the field's converter.
+- Numeric conversion implicitly trims surrounding whitespace for parsing;
+  an optional text normalizer applies to the resulting text.
+- Validator-local checks cannot change the field-wide normalization plan.
+- Validators have an explicit order and stop at the first error for each field.
+- Order numbers must be unique within each field's validator category. Duplicate
+  orders are configuration errors, including across action-specific declarations.
+- Text validators check normalized text; typed validators check a converted value.
+- The first typed validator triggers conversion for its supported type when needed.
+- An empty optional field remains missing rather than becoming zero or another
+  default typed value. Required is what makes a missing value an error.
+- Conversion is limited to supported types with defined server and browser behavior.
+- Supported numeric conversion includes decimal, float, and double for legacy
+  compatibility; monetary precision, rounding, and invalid values need explicit
+  rules, and server-side amounts remain authoritative.
+- An explicit conversion check can be ordered before a typed validator to choose its error.
+- If no explicit check covers conversion, an implicit check reports a conversion failure.
+- Numeric MinValue and MaxValue validators check inclusive bounds independently.
+- A numeric Step validator accepts whole multiples of a positive increment from
+  that action's minimum, or from zero if no minimum applies. Decimal inputs such
+  as 0.3 with a 0.1 step are compared without binary floating-point drift.
+- Required, MinLength, MaxLength, Pattern, option membership, MatchesField, and custom
+  validators are supported by the design; typed range and date checks are also planned.
+- A pattern used for input blocking may need a partial-input rule distinct from its
+  complete-value validation rule (for example, a hyphen only after five ZIP digits).
+- Developers define validation messages once; client errors and MVC ModelState use them.
+- A field's error reveal policy controls both when its message is shown and when
+  the input references it for assistive technology; the initial policy reveals
+  errors after blur or a submit attempt, not on initial typing.
+- The helper accepts static classes for the group, label, input, and error;
+  the forms system adds invalid, valid, and error-visible state classes.
+- The initial API does not expose blurred/unblurred or modified/unmodified CSS
+  state classes; static classes are chosen in the Razor helper call.
+- Changing a field updates an error that has already been revealed.
+- Submitting validates the selected action's fields and prevents invalid submission.
+- Developers can trigger a named form action programmatically or associate it
+  with a form control. Both paths use that action's validation rules and MVC target.
+- If browser scripts are unavailable, ordinary form submission still reaches the
+  declared MVC action and receives authoritative server validation.
+- On invalid submission, focus the visually first invalid field, comparing vertical
+  position and then horizontal position for fields whose bounding boxes overlap.
+- Browser code is served as external scripts without unsafe-inline or unsafe-eval.
+- The initial API has no transformation stage; application-specific value mapping can
+  happen after a valid submission.

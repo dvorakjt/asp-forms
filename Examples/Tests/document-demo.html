@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'self'"
+    />
+    <link rel="stylesheet" href="../../Content/document-form.css" />
+    <title>Document form browser integration fixture</title>
+  </head>
+  <body>
+    <form
+      action="#"
+      method="post"
+      data-form-state="document"
+      novalidate
+      data-form-config='{"actions":[{"name":"SaveDraft"},{"name":"Submit"}],"fields":[{"name":"Title","converter":"String","normalizer":{"kind":"Trim"},"scope":{},"options":[],"blockers":[],"validators":[{"kind":"Required","message":"Enter a title.","scope":{}},{"kind":"MaxLength","length":80,"message":"Title is too long.","scope":{}}]},{"name":"Summary","converter":"String","normalizer":{"kind":"Trim"},"scope":{},"options":[],"blockers":[],"validators":[{"kind":"Required","message":"Enter a summary.","scope":{"Include":["Submit"]}},{"kind":"Custom","ruleId":"SummaryDiffersFromTitle","otherField":"Title","message":"Use a different summary.","scope":{"Include":["Submit"]}}]},{"name":"Amount","converter":"Decimal","normalizer":null,"scope":{"Include":["Submit"]},"options":[],"blockers":[{"kind":"Pattern","prefixPattern":"^[0-9]*(\\.[0-9]*)?$"},{"kind":"Custom","ruleId":"AmountHasNoEmbeddedSpaces"}],"validators":[{"kind":"Required","message":"Enter an amount.","scope":{}},{"kind":"IsNumber","message":"Enter a valid amount.","scope":{}},{"kind":"MinValue","minimum":0.01,"message":"At least 0.01.","scope":{}},{"kind":"Step","stepSize":0.01,"message":"Whole cents only.","scope":{}}]}]}'
+    >
+      <div data-form-field="Title" data-error-reveal="AfterBlurOrSubmit">
+        <label for="Title">Title</label
+        ><input id="Title" name="Title" data-form-control="Title" />
+        <span id="Title_error" data-form-error="Title" hidden></span>
+      </div>
+      <div data-form-field="Summary" data-error-reveal="AfterBlurOrSubmit">
+        <label for="Summary">Summary</label
+        ><input id="Summary" name="Summary" data-form-control="Summary" />
+        <span id="Summary_error" data-form-error="Summary" hidden></span>
+      </div>
+      <div data-form-field="Amount" data-error-reveal="AfterBlurOrSubmit">
+        <label for="Amount">Amount</label
+        ><input id="Amount" name="Amount" data-form-control="Amount" />
+        <span id="Amount_error" data-form-error="Amount" hidden></span>
+      </div>
+      <button type="submit" data-form-action="SaveDraft">Save draft</button>
+      <button type="submit" data-form-action="Submit">Submit</button>
+    </form>
+    <script src="../../Content/document-rules.js" defer></script>
+    <script src="../Client/document-bindings.js" defer></script>
+    <script src="../../Forms/form-state.js" defer></script>
+    <script src="../../Forms/form-runtime.js" defer></script>
+  </body>
+</html>

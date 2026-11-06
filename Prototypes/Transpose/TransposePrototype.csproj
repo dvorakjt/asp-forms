@@ -1,0 +1,14 @@
+<Project Sdk="Transpose.Build.Target/26.10.7421">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <UseLocalTranspose>true</UseLocalTranspose>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Transpose.BCL" Version="26.10.7423" />
+    <PackageReference Include="Transpose.Core" Version="26.10.7420" />
+    <Compile Include="SharedQuantity.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

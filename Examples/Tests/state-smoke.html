@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'"
+    />
+    <title>Form state smoke check</title>
+  </head>
+  <body>
+    <form data-form-state="test">
+      <div data-form-field="Title" data-error-reveal="AfterBlurOrSubmit">
+        <label for="Title">Title</label>
+        <input id="Title" name="Title" data-form-control="Title" />
+        <span id="Title_error" data-form-error="Title" hidden></span>
+      </div>
+      <div data-form-field="Topics" data-error-reveal="OnSubmit">
+        <fieldset>
+          <legend>Topics</legend>
+          <input type="checkbox" name="Topics" data-form-control="Topics" />
+          <input type="checkbox" name="Topics" data-form-control="Topics" />
+        </fieldset>
+        <span id="Topics_error" data-form-error="Topics" hidden></span>
+      </div>
+    </form>
+    <script src="../../Forms/form-state.js" defer></script>
+  </body>
+</html>
